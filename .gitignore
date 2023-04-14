@@ -1,0 +1,10 @@
+# idea
+.idea
+.env
+
+#cache
+/.cache
+/.parcel-cache
+/package-lock.json
+/server/link/.parcel-cache
+/server/link/package-lock.json
