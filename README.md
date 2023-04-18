@@ -1,2 +1,2 @@
-# dmp.mi.public
-MI 솔루션 개발팀 Public Repository
+# dmp.mi.public.sample-chart
+MI 솔루션 개발팀 DevLog : Sample Chart
