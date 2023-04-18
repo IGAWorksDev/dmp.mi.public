@@ -15,7 +15,6 @@ const indexStore = observable({
     },
 
     set func(idx:number) {
-        console.log(idx);
         this.index = idx;
     }
 });
