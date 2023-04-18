@@ -179,7 +179,7 @@ article.line-chart {
                     cursor: pointer;
                 }
 
-                > div.tooltip {
+                > span.tooltip {
                     position: absolute;
                     top: 25%;
                     left: 60%;
@@ -192,7 +192,7 @@ article.line-chart {
                     gap: .5rem;
                     font-size: 1rem;
 
-                    > p.data {
+                    > span.data {
                         display: flex;
                         align-items:center;
                         gap: .25rem;

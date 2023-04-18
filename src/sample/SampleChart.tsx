@@ -17,7 +17,7 @@ interface SampleChartProps {
 @observer
 export default class SampleChart extends React.Component<SampleChartProps> {
     private readonly ref = React.createRef<HTMLDivElement>();
-
+    private readonly refLineGrid = React.createRef<SVGSVGElement>();
     @observable
     private width: number = 0;
     @observable
@@ -42,13 +42,7 @@ export default class SampleChart extends React.Component<SampleChartProps> {
     }
 
     componentDidUpdate(prevProps: Readonly<SampleChartProps>, prevState: Readonly<{}>, snapshot?: any) {
-        extLineAnimation("line-path");
-        /**
-         * todo: 불필요한 반복을 하지 않도록 명확한 시점 제한하기
-         * if (this.props.series !== prevProps.series) {
-         *      extLineAnimation("line-path");
-         * }
-         * */
+        this.runAnimation();
     }
 
     @action
@@ -102,7 +96,7 @@ export default class SampleChart extends React.Component<SampleChartProps> {
     }
 
     @action
-    private setHoverIdx = (idx: number) => () => this.hoverIdx = idx;  //동일한 형태면 클로저 이용
+    private setHoverIdx = (idx: number) => action(() => this.hoverIdx = idx);  //동일한 형태면 클로저 이용
 
 
     private renderYAxis = () => {
@@ -143,17 +137,17 @@ export default class SampleChart extends React.Component<SampleChartProps> {
             rs[a] = series[a][idx];
             return rs;
         }, {});
-        return <div className={'tooltip'} style={{...this.pointerPosition}}>
+        return <span className={'tooltip'} style={{...this.pointerPosition}}>
             {
                 Object.keys(tooltip).map((a, i) => {
-                    return <p key={`tooltip-${i}`} className={'data'}>
+                    return <span key={`tooltip-${i}`} className={'data'}>
                         <span/>
                         <span>{a}</span>
                         <span>{tooltip[a]}</span>
-                    </p>
+                    </span>
                 })
             }
-        </div>
+        </span>
     }
 
     private renderPoint = () => {
@@ -179,7 +173,7 @@ export default class SampleChart extends React.Component<SampleChartProps> {
 
     private renderLine = () => {
         const {width, height} = this;
-        return <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={'line-grid'}>
+        return <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={'line-grid'} ref={this.refLineGrid}>
             {
                 this.pointList.map((path: any, i: number) => {
                     const pathArr = path.map((p: any, z: number) => z === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`);
@@ -188,6 +182,22 @@ export default class SampleChart extends React.Component<SampleChartProps> {
                 })
             }
         </svg>
+    }
+
+    private runAnimation = () => {
+        const {children = []} = this.refLineGrid.current ?? {};
+        if (children.length > 0) {
+            for (let eachLine of children as any) {
+                if (!(eachLine instanceof SVGPathElement)) {
+                    continue;
+                }
+                if (eachLine?.getTotalLength !== undefined) {
+                    const lineLength = String(eachLine.getTotalLength());
+                    eachLine.setAttribute('stroke-dasharray', lineLength);
+                    eachLine.setAttribute('stroke-dashoffset', lineLength);
+                }
+            }
+        }
     }
 
     render() {
@@ -213,21 +223,5 @@ export default class SampleChart extends React.Component<SampleChartProps> {
                 {this.renderXAxisCover()}
             </div>
         </article>
-    }
-}
-
-function extLineAnimation(className: string) {
-    const allLines = document.getElementsByClassName(className);
-    if (allLines.length > 0) {
-        for (let eachLine of allLines as any) {
-            if (!(eachLine instanceof SVGPathElement)) {
-                continue;
-            }
-            if (eachLine?.getTotalLength !== undefined) {
-                const lineLength = String(eachLine.getTotalLength());
-                eachLine.setAttribute('stroke-dasharray', lineLength);
-                eachLine.setAttribute('stroke-dashoffset', lineLength);
-            }
-        }
     }
 }
