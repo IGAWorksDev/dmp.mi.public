@@ -11,7 +11,7 @@ interface SampleChartProps {
     title:string;
     series: SeriesProps;
     categories: string[];
-    handleOtherEvent?: () => void; //이벤트 연결에 대한 코드도 있으면 좋을듯
+    handleOtherEvent?: (idx:number) => void;
 }
 
 @observer
@@ -96,7 +96,10 @@ export default class SampleChart extends React.Component<SampleChartProps> {
     }
 
     @action
-    private setHoverIdx = (idx: number) => action(() => this.hoverIdx = idx);  //동일한 형태면 클로저 이용
+    private setHoverIdx = (idx: number) => action(() => {
+        this.hoverIdx = idx;
+        this.props.handleOtherEvent && this.props.handleOtherEvent(idx);
+    });
 
 
     private renderYAxis = () => {

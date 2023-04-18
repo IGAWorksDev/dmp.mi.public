@@ -3,8 +3,26 @@
 }
 
 .App-header {
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+}
+
+article {
   display: flex;
-  height: 30rem;
+  flex-direction: column;
+  height: 40rem;
+
+  > * {
+    &:first-child {flex: 1}
+  }
+
+  > .other-event {
+    > div {
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }
 
 * {
